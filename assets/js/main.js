@@ -233,10 +233,12 @@ const validateHours = () => {
   const endHour = document.getElementById("endHour");
 
   if (startHour.value > endHour.value) {
+    if (endHour.value !== "") {
+      alert("La hora final no puede ser menor a la inicial");
+    }
+
     endHour.value = "";
   }
-
-  alert("La hora final no puede ser menor a la inicial");
 };
 
 startHour.addEventListener("change", validateHours);
@@ -256,10 +258,9 @@ const validateDate = () => {
   const today = `${year}-${month < 10 ? "0" + month : month}-${day < 10 ? "0" + day : day}`;
 
   if (date.value < today) {
+    alert("La fecha no puede ser menor a la actual");
     date.value = today;
   }
-
-  alert("La fecha no puede ser menor a la actual");
 };
 
 date.addEventListener("change", validateDate);
