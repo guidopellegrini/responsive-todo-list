@@ -501,6 +501,15 @@ img {
     font-size: 90%;
   }
 
+  .options-icon:hover {
+    filter: unset;
+  }
+
+  .options-icon:active {
+    filter: drop-shadow(5px 5px 5px rgba(0, 0, 0, 0.5));
+    transform: scale(1.05);
+  }
+
   .wrapper {
     width: 100%;
     max-width: 100%;
