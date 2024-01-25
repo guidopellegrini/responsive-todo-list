@@ -163,7 +163,7 @@ confirmButton.addEventListener("click", () => {
     return;
   }
 
-  task = {
+  let task = {
     date: date,
     message: message,
     completed: false,
@@ -235,6 +235,8 @@ const validateHours = () => {
   if (startHour.value > endHour.value) {
     endHour.value = "";
   }
+
+  alert("La hora final no puede ser menor a la inicial");
 };
 
 startHour.addEventListener("change", validateHours);
@@ -256,6 +258,8 @@ const validateDate = () => {
   if (date.value < today) {
     date.value = today;
   }
+
+  alert("La fecha no puede ser menor a la actual");
 };
 
 date.addEventListener("change", validateDate);
