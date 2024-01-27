@@ -251,13 +251,14 @@ img {
   flex-direction: column;
   align-items: flex-end;
   justify-content: flex-start;
-  gap: 1rem;
   padding-block: 1rem;
 }
 
 /*=============== LIST ITEM ===============*/
 
 .list__item {
+  margin-bottom: 1rem;
+
   background: rgba(255, 255, 255, 0.25);
   box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
 
@@ -360,6 +361,17 @@ img {
 .list__item .action-icon:active {
   transition: all 0.3s ease;
   transform: scale(0.9);
+}
+
+.list__item.dragging {
+  opacity: 0;
+  transition: all 0s ease;
+}
+
+.list__item .delete-list-button {
+  position: absolute;
+  left: -3.3rem;
+  font-size: 1.7rem;
 }
 
 /*=============== CARD BACK ===============*/
@@ -472,13 +484,13 @@ img {
 
 /*=============== SCROLL BAR ===============*/
 ::-webkit-scrollbar {
-  width: 0.6rem;
-  border-radius: 0.5rem;
+  width: 0.8rem;
+  border-radius: 1rem;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: var(--scroll-thumb-color);
-  border-radius: 0.5rem;
+  border-radius: 1rem;
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -493,6 +505,21 @@ img {
   }
   100% {
     opacity: 1;
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 0;
+    height: 85px;
+    margin: 0;
+    padding: 0;
+  }
+  100% {
+    opacity: 0;
+    height: 0%;
+    margin: 0;
+    padding: 0;
   }
 }
 

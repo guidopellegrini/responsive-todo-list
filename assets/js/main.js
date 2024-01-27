@@ -40,7 +40,6 @@ form.addEventListener("submit", (e) => {
 addButton.addEventListener("click", () => {
   //Recuperamos la fecha actual y la seteamos en el input
   configDate();
-
   wrapper.classList.toggle("is-flipped");
 });
 
@@ -49,13 +48,14 @@ addButton.addEventListener("click", () => {
 const createTask = (task) => {
   let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
 
-  //Transformo la fecha a formato corto
+  //Transformamos la fecha a formato corto
   let date = new Date(task.date);
   let day = date.getDate();
   let month = date.toLocaleString("default", { month: "short" }).toUpperCase();
   let newDate = `${day} ${month}`;
 
   const li = `
+  
     <li class="list__item ${task.completed ? "completed" : ""}">
     <div class="item-date">${newDate}</div>
     <div class="details">
@@ -72,25 +72,79 @@ const createTask = (task) => {
   list.insertAdjacentHTML("beforeend", li);
 
   //Agregamos el evento al último item de la lista (el que acabamos de crear)
+  //Este evento nos permitira marcar la tarea como completada y viceversa
   const currentLastItem = list.querySelector(".list__item:last-child");
 
-  if (currentLastItem) {
-    currentLastItem.querySelector(".action-icon").addEventListener("click", (event) => {
-      const clickedItem = event.currentTarget.parentElement;
-      const icon = event.currentTarget;
-      const tasks = JSON.parse(localStorage.getItem("tasks"));
-      const index = Array.from(clickedItem.parentElement.children).indexOf(clickedItem);
+  currentLastItem.querySelector(".action-icon").addEventListener("click", (event) => {
+    const clickedItem = event.currentTarget.parentElement;
+    const icon = event.currentTarget;
+    const tasks = JSON.parse(localStorage.getItem("tasks"));
+    const index = Array.from(clickedItem.parentElement.children).indexOf(clickedItem);
 
-      if (clickedItem.classList.contains("completed")) {
-        icon.innerHTML = `<i class="ri-close-circle-fill"></i>`;
-        clickedItem.classList.remove("completed");
-      } else {
-        icon.innerHTML = `<i class="ri-checkbox-circle-fill"></i>`;
-        clickedItem.classList.add("completed");
-      }
+    const listitem = clickedItem.parentElement.children[index];
 
-      tasks[index].completed = !tasks[index].completed;
-      localStorage.setItem("tasks", JSON.stringify(tasks));
+    if (clickedItem.classList.contains("completed")) {
+      icon.innerHTML = `<i class="ri-close-circle-fill"></i>`;
+      clickedItem.classList.remove("completed");
+
+      //Eliminamos el icono de eliminar
+      listitem.removeChild(listitem.firstChild);
+    } else {
+      icon.innerHTML = `<i class="ri-checkbox-circle-fill"></i>`;
+      clickedItem.classList.add("completed");
+
+      //agregamos icono de eliminar
+      const trashIcon = `<div class="action-icon delete-list-button"><i class="ri-delete-bin-line"></i></div>`;
+      listitem.insertAdjacentHTML("afterbegin", trashIcon);
+
+      //agrergamos evento al icono de eliminar para eliminar la tarea
+      const deleteIcon = listitem.querySelector(".delete-list-button");
+
+      deleteIcon.addEventListener("click", () => {
+        //agregamos animation "fade-out 300ms ease forwards" al listitem
+        listitem.style.animation = "fade-out 300ms ease forwards";
+
+        setTimeout(() => {
+          // Eliminamos la tarea del localStorage
+          let listItems = Array.from(list.children);
+          let tasks = JSON.parse(localStorage.getItem("tasks"));
+          const index = listItems.indexOf(event.target);
+          tasks.splice(index, 1);
+          localStorage.setItem("tasks", JSON.stringify(tasks));
+
+          // Eliminamos el elemento del DOM
+          listitem.remove();
+        }, 300);
+      });
+    }
+
+    tasks[index].completed = !tasks[index].completed;
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+  });
+
+  // Si la tarea está completada, agregamos el icono de eliminar
+  if (task.completed) {
+    const trashIcon = `<div class="action-icon delete-list-button"><i class="ri-delete-bin-line"></i></div>`;
+    currentLastItem.insertAdjacentHTML("afterbegin", trashIcon);
+
+    //agrergamos evento al icono de eliminar para eliminar la tarea
+    const deleteIcon = currentLastItem.querySelector(".delete-list-button");
+
+    deleteIcon.addEventListener("click", () => {
+      //agregamos animation "fade-out 300ms ease forwards" al listitem
+      currentLastItem.style.animation = "fade-out 300ms ease forwards";
+
+      setTimeout(() => {
+        // Eliminamos la tarea del localStorage
+        let listItems = Array.from(list.children);
+        let tasks = JSON.parse(localStorage.getItem("tasks"));
+        const index = listItems.indexOf(currentLastItem);
+        tasks.splice(index, 1);
+        localStorage.setItem("tasks", JSON.stringify(tasks));
+
+        // Eliminamos el elemento del DOM
+        currentLastItem.remove();
+      }, 300);
     });
   }
 };
@@ -179,6 +233,7 @@ confirmButton.addEventListener("click", () => {
   wrapper.classList.toggle("is-flipped");
 });
 
+// Volvemos a la pantalla principal sin agregar la tarea
 backButton.addEventListener("click", () => {
   clearInputs();
   wrapper.classList.toggle("is-flipped");
@@ -203,9 +258,20 @@ const clearInputs = () => {
 
 /* =============== CLEAR ALL TASKS =============== */
 
+// Iteramos sobre todos los elementos de la lista y los animamos uno por uno con un fade-out de 200ms y un delay de 200ms entre cada uno
 const clearAllTasks = () => {
+  const listItems = Array.from(list.children);
+
+  listItems.forEach((listItem, index) => {
+    let delay = 200 * index;
+    listItem.style.animation = `fade-out 200ms ease forwards ${delay}ms`;
+
+    setTimeout(() => {
+      listItem.remove();
+    }, delay + 200);
+  });
+
   localStorage.clear();
-  list.innerHTML = "";
 };
 
 clearTasksButton.addEventListener("click", () => {
@@ -227,7 +293,7 @@ const configDate = () => {
 
 /* =============== VALIDATE HOURS =============== */
 
-//que la hora final no sea menor a la inicial
+//validamos que la hora final no sea menor a la inicial
 const validateHours = () => {
   const startHour = document.getElementById("startHour");
   const endHour = document.getElementById("endHour");
@@ -246,7 +312,7 @@ endHour.addEventListener("change", validateHours);
 
 /* =============== VALIDATE DATE =============== */
 
-//que la fecha no sea menor a la actual
+//validamos que la fecha no sea menor a la actual
 const validateDate = () => {
   const date = document.getElementById("date");
 
